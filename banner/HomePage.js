@@ -1,12 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+//import FooterMenu from "./components/menus/footermenu";
 
 const HomePage = ({ navigation }) => {
   const handleButtonPress = () => {
     alert("Welcome to your home page!");
   };
 
-  return (
+    return (
+    <View style={styles.outercontainer}>
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Your App</Text>
       <Text style={styles.subtitle}>This is your starting point!</Text>
@@ -35,17 +37,23 @@ const HomePage = ({ navigation }) => {
         onPress={() => navigation.navigate("BusinessForm")}
       >
         <Text style={styles.buttonText}>Business Form</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>      
+    </View>
+    {/* <FooterMenu/> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outercontainer:{
+    flex: 1,
+    justifyContent:"flex-end"
+  },
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     padding: 20,
   },
   title: {
