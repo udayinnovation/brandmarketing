@@ -13,17 +13,28 @@ const HomePage = ({ navigation }) => {
       <Text style={styles.title}>Welcome to Your App</Text>
       <Text style={styles.subtitle}>This is your starting point!</Text>
 
+      {/* Button 1 */}
       <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
         <Text style={styles.buttonText}>Click Me</Text>
       </TouchableOpacity>
 
+      {/* Button 2: Login */}
       <TouchableOpacity
         style={[styles.button, styles.loginButton]}
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.navigate("LoginPage")}
       >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
+      {/* Button 3: Signup */}
+      {/* <TouchableOpacity
+        style={[styles.button, styles.signupButton]}
+        onPress={() => navigation.navigate("Signup")}
+      >
+        <Text style={styles.buttonText}>Signup</Text>
+      </TouchableOpacity> */}
+
+      {/* Button 4: Image Picker */}
       <TouchableOpacity
         style={[styles.button, styles.imagePickerButton]}
         onPress={() => navigation.navigate("ImagePicker")}
@@ -31,15 +42,30 @@ const HomePage = ({ navigation }) => {
         <Text style={styles.buttonText}>Image Picker</Text>
       </TouchableOpacity>
 
-      {/* New Button for BusinessForm Page */}
+      {/* Button 5: Business Form */}
       <TouchableOpacity
         style={[styles.button, styles.businessFormButton]}
         onPress={() => navigation.navigate("BusinessForm")}
       >
         <Text style={styles.buttonText}>Business Form</Text>
-      </TouchableOpacity>      
+      </TouchableOpacity>
+
+      {/* Button 6: Leads Page */}
+      <TouchableOpacity
+        style={[styles.button, styles.leadsPageButton]}
+        onPress={() => navigation.navigate("Lead")}
+      >
+        <Text style={styles.buttonText}>Go to Leads</Text>
+      </TouchableOpacity>
+
+      {/* Button 7: Business Details Page */}
+      <TouchableOpacity
+        style={[styles.button, styles.businessDetailsButton]}
+        onPress={() => navigation.navigate("BusinessDetails")}
+      >
+        <Text style={styles.buttonText}>Business Details</Text>
+      </TouchableOpacity>
     </View>
-    {/* <FooterMenu/> */}
     </View>
   );
 };
@@ -77,13 +103,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   loginButton: {
-    backgroundColor: "#03a9f4", // Different color for the Login button
+    backgroundColor: "#03a9f4",
   },
+  // signupButton: {
+  //   backgroundColor: "#e91e63", // Color for the Signup button
+  // },
   imagePickerButton: {
-    backgroundColor: "#4caf50", // Different color for the Image Picker button
+    backgroundColor: "#4caf50",
   },
   businessFormButton: {
-    backgroundColor: "#ff5722", // Different color for the Business Form button
+    backgroundColor: "#ff5722",
+  },
+  leadsPageButton: {
+    backgroundColor: "#8e44ad",
+  },
+  businessDetailsButton: {
+    backgroundColor: "#f39c12", // Color for the Business Details button
   },
   buttonText: {
     color: "#fff",

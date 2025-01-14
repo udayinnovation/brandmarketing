@@ -10,6 +10,7 @@ import GrowPage from '../../pages/GrowPage'
 import Account from '../../pages/Account'
 
 
+
 const tabMenu=()=>{
     const TabNav = createBottomTabNavigator();
     return (
@@ -36,7 +37,7 @@ const FooterMenu = () => {
             <FontAwesome5 name="images" style={styles.iconStyle} color={route.name === 'ImagePicker' && 'blue'}/>
             <Text>Post</Text>
         </TouchableOpacity>
-        <TouchableOpacity  onPress={()=>navigation.navigate('Lead')}>
+        <TouchableOpacity  onPress={()=>navigation.navigate('Leads')}>
             <FontAwesome5 name="group" style={styles.iconStyle} color={route.name === 'Lead' && 'blue'}/>
             <Text>About</Text>
         </TouchableOpacity>

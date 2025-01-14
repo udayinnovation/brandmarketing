@@ -5,7 +5,9 @@ import Account from '../../pages/Account';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import GrowPage from '../../pages/GrowPage';
 import LeadPage from '../../pages/LeadPage';
+import LeadDetailsPage from '../../pages/LeadDetailsPage';
 import ImagePickerPage from '../../ImagePickerPage';
+import BusinessDetails from '../../pages/BusinessDetails';
 
 const TabNav = () => {
     const Tab = createBottomTabNavigator();
@@ -18,7 +20,7 @@ const TabNav = () => {
                 else if (route.name === 'ImagePicker') iconName = 'images';
                 else if (route.name === 'Lead') iconName = 'users';
                 else if (route.name === 'Grow') iconName = 'seedling';
-                else if (route.name === 'Account') iconName = 'user';
+                else if (route.name === 'Business') iconName = 'user';
                 return <FontAwesome5 name={iconName} size={size} color={color} />;
             },
             headerShown: false,
@@ -28,7 +30,9 @@ const TabNav = () => {
             <Tab.Screen name='ImagePicker' component={ImagePickerPage}/>
             <Tab.Screen name='Lead' component={LeadPage}/>
             <Tab.Screen name='Grow' component={GrowPage}/> 
-            <Tab.Screen name="Account" component={Account} />
+            <Tab.Screen name="Business" component={BusinessDetails} />
+            {/* <Tab.Screen name="LeadDetails" component={LeadDetailsPage} /> */}
+       
         </Tab.Navigator>
   )
 }

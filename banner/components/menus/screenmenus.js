@@ -6,7 +6,7 @@ import LeadPage from '../../pages/LeadPage';
 import BusinessForm from '../../BusinessForm';
 import Account from '../../pages/Account';
 import HeaderMenu from './headermenu';
-import LoginPage from '../../LoginPage';
+import LoginPage from '../../pages/LoginPage';
 import RegisterPage from '../../pages/RegisterPage';
 import { StyleSheet } from 'react-native';
 import GrowPage from '../../pages/GrowPage';

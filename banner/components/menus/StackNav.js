@@ -8,6 +8,9 @@ import BusinessForm from "../../BusinessForm";
 import Account from "../../pages/Account";
 import Icon from 'react-native-vector-icons/Entypo';
 import UserScreen from "../../pages/UserScreen";
+import LeadDetailsPage from "../../pages/LeadDetailsPage";
+import BusinessDetails from "../../pages/BusinessDetails";
+import LoginPage from "../../pages/LoginPage";
 
 
 const StackNav = () => {
@@ -54,9 +57,12 @@ const StackNav = () => {
             },
           }} />
         <Stack.Screen name="Lead" component={LeadPage}  />
+        <Stack.Screen name="LeadDetails" component={LeadDetailsPage}  />
+        <Stack.Screen name="BusinessDetails" component={BusinessDetails}  />
         <Stack.Screen name="Grow" component={GrowPage} />
         <Stack.Screen name="BusinessForm" component={BusinessForm} />
         <Stack.Screen name="Account" component={Account} />
+        <Stack.Screen name="LoginPage" component={LoginPage} />
         {/* <Stack.Screen
           name="User"
           component={UserScreen}

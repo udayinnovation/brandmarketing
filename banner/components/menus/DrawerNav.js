@@ -2,6 +2,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import StackNav from "./StackNav";
 import TabNav from "./TabNav";
 import Account from "../../pages/Account";
+import BusinessDetails from "../../pages/BusinessDetails";
 
 
 const DrawerNav = () => {
@@ -16,7 +17,7 @@ const DrawerNav = () => {
         // </Drawer.Navigator> 
         <Drawer.Navigator >
             <Drawer.Screen name="Home" component={TabNav} />
-            <Drawer.Screen name="Account" component={Account} />
+            <Drawer.Screen name="Business" component={BusinessDetails} />
         </Drawer.Navigator>
 
     );

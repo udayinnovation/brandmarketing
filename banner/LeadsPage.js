@@ -8,8 +8,6 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
-  Linking,
-  Alert,
 } from "react-native";
 
 export default function LeadsPage({ navigation }) {
@@ -28,7 +26,7 @@ export default function LeadsPage({ navigation }) {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("http://192.168.1.189:8000/api/leads/fetchlead", {
+      const response = await fetch("http://localhost:8000/api/leads/fetchlead", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,18 +50,6 @@ export default function LeadsPage({ navigation }) {
   useEffect(() => {
     fetchLeads();
   }, []);
-  const makePhoneCall = (phoneNumber) => {
-    const url = `tel:${phoneNumber}`;
-    Linking.canOpenURL(url)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(url);
-        } else {
-          Alert.alert("Error", "Your device does not support this feature.");
-        }
-      })
-      .catch((err) => Alert.alert("Error", "Failed to make a call."));
-  };
 
   // Filter leads based on the search query
   const filteredLeads = leads.filter(
@@ -138,7 +124,7 @@ export default function LeadsPage({ navigation }) {
             <TouchableOpacity
               key={lead._id}
               style={styles.leadCard}
-              onPress={() => navigation.navigate("LeadDetails", { lead })}
+              onPress={() => navigation.navigate("LeadDetailsPage", { lead })}
             >
               <Image
                 source={{
@@ -168,10 +154,7 @@ export default function LeadsPage({ navigation }) {
                   {lead.status}
                 </Text>
               </View>
-              <TouchableOpacity
-                style={styles.callButton}
-                onPress={() => makePhoneCall(lead.phoneNumber)}
-              >
+              <TouchableOpacity style={styles.callButton}>
                 <Text style={styles.callIcon}>📞</Text>
               </TouchableOpacity>
             </TouchableOpacity>
