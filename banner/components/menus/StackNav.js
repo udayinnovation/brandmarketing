@@ -11,6 +11,7 @@ import UserScreen from "../../pages/UserScreen";
 import LeadDetailsPage from "../../pages/LeadDetailsPage";
 import BusinessDetails from "../../pages/BusinessDetails";
 import LoginPage from "../../pages/LoginPage";
+import GrowPackagePage from "../../pages/GrowPackagePage";
 
 
 const StackNav = () => {
@@ -60,6 +61,7 @@ const StackNav = () => {
         <Stack.Screen name="LeadDetails" component={LeadDetailsPage}  />
         <Stack.Screen name="BusinessDetails" component={BusinessDetails}  />
         <Stack.Screen name="Grow" component={GrowPage} />
+        <Stack.Screen name="GrowPackage" component={GrowPackagePage} />
         <Stack.Screen name="BusinessForm" component={BusinessForm} />
         <Stack.Screen name="Account" component={Account} />
         <Stack.Screen name="LoginPage" component={LoginPage} />

@@ -4,6 +4,7 @@ import StackNav from './StackNav';
 import Account from '../../pages/Account';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import GrowPage from '../../pages/GrowPage';
+import GrowStackNavigator from './GrowStackNav'; 
 import LeadPage from '../../pages/LeadPage';
 import LeadDetailsPage from '../../pages/LeadDetailsPage';
 import ImagePickerPage from '../../ImagePickerPage';
@@ -29,7 +30,7 @@ const TabNav = () => {
             <Tab.Screen name="Home" component={StackNav} />
             <Tab.Screen name='ImagePicker' component={ImagePickerPage}/>
             <Tab.Screen name='Lead' component={LeadPage}/>
-            <Tab.Screen name='Grow' component={GrowPage}/> 
+            <Tab.Screen name='Grow' component={GrowStackNavigator}/> 
             <Tab.Screen name="Business" component={BusinessDetails} />
             {/* <Tab.Screen name="LeadDetails" component={LeadDetailsPage} /> */}
        

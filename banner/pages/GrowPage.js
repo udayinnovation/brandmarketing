@@ -1,21 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const GrowPage = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* Header */}
-      {/* <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <FontAwesome5 name="bars" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Grow your business</Text>
-        <TouchableOpacity>
-          <FontAwesome5 name="question-circle" size={24} color="black" />
-        </TouchableOpacity>
-      </View> */}
-
       {/* Content */}
       <ScrollView>
         {/* Top Section */}
@@ -36,6 +25,7 @@ const GrowPage = ({ navigation }) => {
             title="Get New Leads"
             description="Get 250 leads and reach 80,000 people."
             platforms={['facebook', 'instagram']}
+            navigation={navigation}
           />
           <ServiceItem
             icon="whatsapp"
@@ -65,6 +55,17 @@ const GrowPage = ({ navigation }) => {
             <Text style={styles.callNowButtonText}>Call Now</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Navigate to Customize Package */}
+        <View style={styles.customizeSection}>
+          <Text style={styles.customizeTitle}>Ready to Customize Your Package?</Text>
+          <TouchableOpacity
+            style={styles.customizeButton}
+            onPress={() => navigation.navigate('GrowPackage')} // Navigate to PackageLeadPage
+          >
+            <Text style={styles.customizeButtonText}>Customize Package</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -92,19 +93,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 15,
-    backgroundColor: '#f8f8f8',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   topSection: {
     backgroundColor: '#e8f4ff',
@@ -187,6 +175,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  customizeSection: {
+    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
+    padding: 20,
+    marginTop: 20,
+  },
+  customizeTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  customizeButton: {
+    backgroundColor: '#28a745',
+    padding: 10,
+    borderRadius: 5,
+  },
+  customizeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
 
-export default GrowPage
+export default GrowPage;
