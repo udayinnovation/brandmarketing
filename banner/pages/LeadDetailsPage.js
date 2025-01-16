@@ -8,9 +8,17 @@ const LeadDetailsPage = ({ route, navigation }) => {
     const [noteModalVisible, setNoteModalVisible] = useState(false);
     const [note, setNote] = useState('');
     const [updatedLead, setUpdatedLead] = useState(lead);
+    const [showAllNotes, setShowAllNotes] = useState(false); // To toggle all notes
+    const [expandedNotes, setExpandedNotes] = useState({}); // To toggle individual notes
 
     const handlePhonePress = () => {
         setModalVisible(true);
+      };
+      const toggleNoteExpansion = (index) => {
+        setExpandedNotes((prev) => ({
+          ...prev,
+          [index]: !prev[index],
+        }));
       };
       const openGoogleCalendarApp = () => {
         const calendarDeepLink = Platform.OS === "android"
@@ -66,6 +74,37 @@ const LeadDetailsPage = ({ route, navigation }) => {
           Alert.alert("Error", "An error occurred while saving the note");
         }
       };
+      const handleChangeStatus = async (newStatus) => {
+        try {
+          const response = await fetch("http://192.168.1.189:8000/api/leads/leadstatus", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              leadId: lead._id, // Ensure the lead ID is passed correctly
+              status: newStatus,
+            }),
+          });
+      
+          const data = await response.json();
+      
+          if (response.ok) {
+            // Update the local lead state with the new status
+            setUpdatedLead((prevLead) => ({
+              ...prevLead,
+              status: newStatus,
+            }));
+            Alert.alert("Success", "Lead status updated successfully.");
+          } else {
+            Alert.alert("Error", data.message || "Unable to update status.");
+          }
+        } catch (error) {
+          console.error("Error updating status:", error);
+          Alert.alert("Error", "An error occurred while updating the status.");
+        }
+      };
+      
       
     // Check if lead data is valid before rendering
     if (!lead) {
@@ -148,16 +187,28 @@ const LeadDetailsPage = ({ route, navigation }) => {
       </Modal>
 
       {/* Status Section */}
-      <View style={styles.statusSection}>
-        <Text style={styles.sectionTitle}>Status</Text>
-        <View style={styles.statusContainer}>
-          {["Interested", "Not Connected", "In Progress", "Not Answered", "Converted", "Visited", "Dead"].map((status, index) => (
-            <TouchableOpacity key={index} style={styles.statusButton}>
-              <Text style={styles.statusText}>{status}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
+      <View style={styles.statusContainer}>
+  {["Interested", "Not Connected", "In Progress", "Not Answered", "Converted", "Visited", "Dead"].map((status, index) => (
+    <TouchableOpacity
+      key={index}
+      style={[
+        styles.statusButton,
+        updatedLead.status === status && { backgroundColor: "#007bff" }, // Highlight active status
+      ]}
+      onPress={() => handleChangeStatus(status)}
+    >
+      <Text
+        style={[
+          styles.statusText,
+          updatedLead.status === status && { color: "#fff" }, // Highlight text for active status
+        ]}
+      >
+        {status}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</View>
+
 
       {/* Follow-up and Notes */}
       <View style={styles.followUpSection}>
@@ -169,25 +220,69 @@ const LeadDetailsPage = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
       {/* Notes Section */}
-<View style={styles.notesSection}>
-  <Text style={styles.sectionTitle}>Notes</Text>
-
-  {/* Check if there are any notes */}
-  {updatedLead.notes && updatedLead.notes.length > 0 ? (
-    <ScrollView>
-      {updatedLead.notes.map((note, index) => (
-        <View key={index} style={styles.noteItem}>
-          <Text style={styles.noteText}>{note.text}</Text>
-          <Text style={styles.noteTimestamp}>
-            {new Date(note.timestamp).toLocaleString()} {/* Format the timestamp */}
+      <View style={styles.notesSection}>
+      <Text style={styles.sectionTitle}>Notes</Text>
+      {updatedLead.notes && updatedLead.notes.length > 0 ? (
+        showAllNotes ? (
+          // Show all notes
+          <ScrollView>
+            {updatedLead.notes
+             .slice()
+             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .map((note, index) => (
+              <View key={index} style={styles.noteItem}>
+                <Text style={styles.noteText}>
+                  {expandedNotes[index] || note.text.length <= 20
+                    ? note.text
+                    : `${note.text.substring(0, 20)}... `}
+                  {note.text.length > 20 && (
+                    <Text
+                      style={styles.expandText}
+                      onPress={() => toggleNoteExpansion(index)}
+                    >
+                      {expandedNotes[index] ? ' Show Less' : ' Show More'}
+                    </Text>
+                  )}
+                </Text>
+                <Text style={styles.noteTimestamp}>
+                  {new Date(note.timestamp).toLocaleString()}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+        ) : (
+          // Show only the first note
+          <View style={styles.noteItem}>
+            <Text style={styles.noteText}>
+              {updatedLead.notes[0].text.length <= 20
+                ? updatedLead.notes[0].text
+                : `${updatedLead.notes[0].text.substring(0, 20)}... `}
+              {updatedLead.notes[0].text.length > 20 && (
+                <Text
+                  style={styles.expandText}
+                  onPress={() => toggleNoteExpansion(0)}
+                >
+                  {expandedNotes[0] ? ' Show Less' : ' Show More'}
+                </Text>
+              )}
+            </Text>
+            <Text style={styles.noteTimestamp}>
+              {new Date(updatedLead.notes[0].timestamp).toLocaleString()}
+            </Text>
+          </View>
+        )
+      ) : (
+        // No notes available
+        <Text style={styles.noNotesText}>No notes added yet.</Text>
+      )}
+      {updatedLead.notes && updatedLead.notes.length > 1 && (
+        <TouchableOpacity onPress={() => setShowAllNotes(!showAllNotes)}>
+          <Text style={styles.seeMoreButton}>
+            {showAllNotes ? 'See Less' : 'See More'}
           </Text>
-        </View>
-      ))}
-    </ScrollView>
-  ) : (
-    <Text style={styles.noNotesText}>No notes added yet.</Text>
-  )}
-</View>
+        </TouchableOpacity>
+      )}
+    </View>
 
 
       {/* Modal for adding notes */}
@@ -222,19 +317,25 @@ const LeadDetailsPage = ({ route, navigation }) => {
 
       {/* Timeline */}
       <View style={styles.timelineSection}>
-        <Text style={styles.sectionTitle}>Timeline</Text>
-        <Text style={styles.linkText}>Recent Activities</Text>
-        {[
-          { date: "23-09-2022", activity: "Status Changed: Interested" },
-          { date: "23-09-2022", activity: "Followup via Call" },
-          { date: "22-09-2022", activity: "Followup via WhatsApp" },
-        ].map((item, index) => (
-          <View key={index} style={styles.timelineItem}>
-            <Text style={styles.timelineDate}>{item.date}</Text>
-            <Text style={styles.timelineActivity}>{item.activity}</Text>
-          </View>
-        ))}
-      </View>
+  <Text style={styles.sectionTitle}>Timeline</Text>
+  {lead.timelines && lead.timelines.length > 0 ? (
+    lead.timelines
+      .slice() // Create a shallow copy to avoid mutating the original array
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sort in descending order
+      .map((entry, index) => (
+        <View key={index} style={styles.timelineItem}>
+          <Text style={styles.timelineDate}>
+            {new Date(entry.timestamp).toLocaleString()}
+          </Text>
+          <Text style={styles.timelineActivity}>{entry.description}</Text>
+        </View>
+      ))
+  ) : (
+    <Text style={styles.noTimelineText}>No timeline data available</Text>
+  )}
+</View>
+
+
     </ScrollView>
   );
 };
@@ -280,6 +381,16 @@ const styles = StyleSheet.create({
   noteText: {
     fontSize: 16,
     color: "#000",
+  },
+  expandText: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  seeMoreButton: {
+    fontSize: 16,
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginTop: 8,
   },
   noteTimestamp: {
     fontSize: 12,
@@ -401,16 +512,17 @@ const styles = StyleSheet.create({
 
   statusSection: {
     marginBottom: 20,
-    marginTop: 80,
+    marginTop: 100,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   statusContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 10,
+    marginTop: 40,
   },
   statusButton: {
     backgroundColor: "#f0f0f0",
@@ -418,13 +530,16 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 10,
     borderRadius: 8,
+    alignItems: "center",
   },
   statusText: {
     fontSize: 14,
     color: "#000",
   },
+  
   followUpSection: {
     marginBottom: 20,
+    marginTop: 20,
   },
   linkText: {
     fontSize: 14,
@@ -433,6 +548,7 @@ const styles = StyleSheet.create({
   },
   timelineSection: {
     marginBottom: 20,
+    marginTop:10
   },
   timelineItem: {
     marginBottom: 10,

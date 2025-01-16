@@ -66,127 +66,139 @@ export default function LeadsPage({ navigation }) {
   };
 
   // Filter leads based on the search query
-  const filteredLeads = leads.filter(
-    (lead) =>
-      lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.phoneNumber.includes(searchQuery)
-  );
+  // Filter leads based on the selected tab and the search query
+const filteredLeads = leads.filter((lead) => {
+  const matchesSearch =
+    lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    lead.phoneNumber.includes(searchQuery);
 
-  return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Leads</Text>
-        <TouchableOpacity
-          style={styles.searchButton}
-          onPress={() => setIsSearchActive(!isSearchActive)}
-        >
-          <Text style={styles.searchIcon}>🔍</Text>
-        </TouchableOpacity>
-      </View>
+  if (activeTab === "All") {
+    return matchesSearch; // Show all leads if "All" is selected
+  }
 
-      {/* Search Field */}
-      {isSearchActive && (
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search leads by name or phone..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      )}
+  return matchesSearch && lead.status === activeTab; // Filter by status
+});
 
-      {/* Tabs */}
-      <ScrollView
-        horizontal
-        contentContainerStyle={styles.tabsContainer}
-        showsHorizontalScrollIndicator={false}
+return (
+  <View style={styles.container}>
+    {/* Header */}
+    <View style={styles.header}>
+      <Text style={styles.headerText}>Leads</Text>
+      <TouchableOpacity
+        style={styles.searchButton}
+        onPress={() => setIsSearchActive(!isSearchActive)}
       >
-        {["All", "Pending", "In-Progress", "Followup on Interest", "Interested", "Done"].map(
-          (tab) => (
-            <TouchableOpacity
-              key={tab}
+        <Text style={styles.searchIcon}>🔍</Text>
+      </TouchableOpacity>
+    </View>
+
+    {/* Search Field */}
+    {isSearchActive && (
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search leads by name or phone..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+    )}
+
+    {/* Tabs */}
+    <ScrollView
+      horizontal
+      contentContainerStyle={styles.tabsContainer}
+      showsHorizontalScrollIndicator={false}
+    >
+      {[
+        "All",
+        "Interested",
+        "Not Connected",
+        "In Progress",
+        "Not Answered",
+        "Converted",
+        "Visited",
+        "Dead",
+        "New Lead",
+      ].map((tab) => (
+        <TouchableOpacity
+          key={tab}
+          style={[styles.tab, activeTab === tab && styles.activeTab]}
+          onPress={() => setActiveTab(tab)}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === tab && styles.activeTabText,
+            ]}
+          >
+            {tab}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+
+    {/* Leads List (Filtered Search Results) */}
+    <ScrollView style={styles.leadsList}>
+      {!loading &&
+        !error &&
+        filteredLeads.map((lead) => (
+          <TouchableOpacity
+            key={lead._id}
+            style={styles.leadCard}
+            onPress={() => navigation.navigate("LeadDetails", { lead })}
+          >
+            <Image
+              source={{
+                uri: "https://via.placeholder.com/50",
+              }}
+              style={styles.leadImage}
+            />
+            <View style={styles.leadDetails}>
+              <Text style={styles.leadName}>{lead.name}</Text>
+              <Text style={styles.leadPhone}>{lead.phoneNumber}</Text>
+              <Text style={styles.leadDate}>
+                Added • {lead.createdAt}
+              </Text>
+            </View>
+            <View
               style={[
-                styles.tab,
-                activeTab === tab && styles.activeTab,
+                styles.leadStatusBadge,
+                { backgroundColor: lead.statusColor },
               ]}
-              onPress={() => setActiveTab(tab)}
             >
               <Text
                 style={[
-                  styles.tabText,
-                  activeTab === tab && styles.activeTabText,
+                  styles.leadStatusText,
+                  { color: lead.statusTextColor },
                 ]}
               >
-                {tab}
+                {lead.status}
               </Text>
-            </TouchableOpacity>
-          )
-        )}
-      </ScrollView>
-
-      {/* Loading Indicator */}
-      {loading && <ActivityIndicator size="large" color="#007bff" />}
-
-      {/* Error Message */}
-      {error && <Text style={styles.errorText}>{error}</Text>}
-
-      {/* Leads List */}
-      <ScrollView style={styles.leadsList}>
-        {!loading &&
-          !error &&
-          filteredLeads.map((lead) => (
+            </View>
             <TouchableOpacity
-              key={lead._id}
-              style={styles.leadCard}
-              onPress={() => navigation.navigate("LeadDetails", { lead })}
+              style={styles.callButton}
+              onPress={() => makePhoneCall(lead.phoneNumber)}
             >
-              <Image
-                source={{
-                  uri: "https://via.placeholder.com/50",
-                }}
-                style={styles.leadImage}
-              />
-              <View style={styles.leadDetails}>
-                <Text style={styles.leadName}>{lead.name}</Text>
-                <Text style={styles.leadPhone}>{lead.phoneNumber}</Text>
-                <Text style={styles.leadDate}>
-                  Added • {lead.createdAt}
-                </Text>
-              </View>
-              <View
-                style={[
-                  styles.leadStatusBadge,
-                  { backgroundColor: lead.statusColor },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.leadStatusText,
-                    { color: lead.statusTextColor },
-                  ]}
-                >
-                  {lead.status}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={styles.callButton}
-                onPress={() => makePhoneCall(lead.phoneNumber)}
-              >
-                <Text style={styles.callIcon}>📞</Text>
-              </TouchableOpacity>
+              <Text style={styles.callIcon}>📞</Text>
             </TouchableOpacity>
-          ))}
-      </ScrollView>
-    </View>
-  );
+          </TouchableOpacity>
+        ))}
+    </ScrollView>
+
+    {/* Loading Indicator */}
+    {loading && <ActivityIndicator size="large" color="#007bff" />}
+    {/* Error Message */}
+    {error && <Text style={styles.errorText}>{error}</Text>}
+  </View>
+);
+
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 0,
-  },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#fff",
+  //   padding: 0,
+  // },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -218,7 +230,7 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flexDirection: "row",
     paddingHorizontal: 16,
-    marginBottom: 0,
+    marginBottom: 8, // Ensure the leads appear just below the tabs
   },
   tab: {
     height: 40,
@@ -241,11 +253,12 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   leadsList: {
+    flexGrow: 1,
+    marginTop: 8, // Adjust spacing below the tabs
     paddingHorizontal: 16,
-    marginTop: 0,
   },
   leadCard: {
-    flexDirection: "column",
+    flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: 8,
