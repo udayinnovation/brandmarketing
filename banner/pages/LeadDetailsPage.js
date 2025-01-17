@@ -20,6 +20,11 @@ const LeadDetailsPage = ({ route, navigation }) => {
           [index]: !prev[index],
         }));
       };
+      const latestNote = updatedLead.notes
+  ?.slice()
+  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+
+
       const openGoogleCalendarApp = () => {
         const calendarDeepLink = Platform.OS === "android"
           ? "content://com.android.calendar/time/" // Android deep link
@@ -31,6 +36,19 @@ const LeadDetailsPage = ({ route, navigation }) => {
             "Unable to open the Calendar app. Please ensure Google Calendar is installed."
           );
         });
+      };
+      const truncateText = (text, charLimit) => {
+        if (text.length > charLimit) {
+          return text.slice(0, charLimit);
+        }
+        return text; // Return the full text if it's within the limit
+      };
+      
+      
+    
+      // Navigate to NotesPage
+      const goToNotesPage = () => {
+        navigation.navigate("NotesPage", { notes: updatedLead.notes });
       };
     
       const makeCall = () => {
@@ -219,70 +237,48 @@ const LeadDetailsPage = ({ route, navigation }) => {
           <Text style={styles.linkText}>Add Note</Text>
         </TouchableOpacity>
       </View>
-      {/* Notes Section */}
-      <View style={styles.notesSection}>
-      <Text style={styles.sectionTitle}>Notes</Text>
-      {updatedLead.notes && updatedLead.notes.length > 0 ? (
-        showAllNotes ? (
-          // Show all notes
-          <ScrollView>
-            {updatedLead.notes
-             .slice()
-             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-            .map((note, index) => (
-              <View key={index} style={styles.noteItem}>
-                <Text style={styles.noteText}>
-                  {expandedNotes[index] || note.text.length <= 20
-                    ? note.text
-                    : `${note.text.substring(0, 20)}... `}
-                  {note.text.length > 20 && (
-                    <Text
-                      style={styles.expandText}
-                      onPress={() => toggleNoteExpansion(index)}
-                    >
-                      {expandedNotes[index] ? ' Show Less' : ' Show More'}
-                    </Text>
-                  )}
-                </Text>
-                <Text style={styles.noteTimestamp}>
-                  {new Date(note.timestamp).toLocaleString()}
-                </Text>
-              </View>
-            ))}
-          </ScrollView>
-        ) : (
-          // Show only the first note
-          <View style={styles.noteItem}>
-            <Text style={styles.noteText}>
-              {updatedLead.notes[0].text.length <= 20
-                ? updatedLead.notes[0].text
-                : `${updatedLead.notes[0].text.substring(0, 20)}... `}
-              {updatedLead.notes[0].text.length > 20 && (
-                <Text
-                  style={styles.expandText}
-                  onPress={() => toggleNoteExpansion(0)}
-                >
-                  {expandedNotes[0] ? ' Show Less' : ' Show More'}
-                </Text>
-              )}
-            </Text>
-            <Text style={styles.noteTimestamp}>
-              {new Date(updatedLead.notes[0].timestamp).toLocaleString()}
-            </Text>
-          </View>
-        )
-      ) : (
-        // No notes available
-        <Text style={styles.noNotesText}>No notes added yet.</Text>
-      )}
-      {updatedLead.notes && updatedLead.notes.length > 1 && (
-        <TouchableOpacity onPress={() => setShowAllNotes(!showAllNotes)}>
-          <Text style={styles.seeMoreButton}>
-            {showAllNotes ? 'See Less' : 'See More'}
+      
+{/* Notes Section */}
+<View style={styles.notesSection}>
+  <Text style={styles.sectionTitle}>Notes</Text>
+
+  {latestNote ? (
+    <View>
+      {latestNote.text.length > 30 ? (
+        // Tappable note if it exceeds 30 characters
+        <TouchableOpacity onPress={goToNotesPage}>
+          <Text style={styles.noteText}>
+            {truncateText(latestNote.text, 30)}...
           </Text>
+         
         </TouchableOpacity>
+      ) : (
+        // Static note if it's within 30 characters
+        <Text style={styles.noteText}>{latestNote.text}</Text>
       )}
+<Text style={styles.noteDateText}>
+        {new Date(latestNote.timestamp).toLocaleDateString()}
+      </Text>
+      {/* Button to view all notes */}
+      {updatedLead.notes?.length-1 > 0 && (
+  <TouchableOpacity
+    style={styles.viewAllNotesButton}
+    onPress={goToNotesPage}
+  >
+    <Text style={styles.viewAllNotesText}>
+      Tap to view all {updatedLead.notes?.length - 1} notes
+    </Text>
+  </TouchableOpacity>
+)}
+
     </View>
+  ) : (
+    <Text style={styles.noNotesText}>No notes added yet.</Text>
+  )}
+</View>
+
+
+
 
 
       {/* Modal for adding notes */}
@@ -327,13 +323,19 @@ const LeadDetailsPage = ({ route, navigation }) => {
           <Text style={styles.timelineDate}>
             {new Date(entry.timestamp).toLocaleString()}
           </Text>
-          <Text style={styles.timelineActivity}>{entry.description}</Text>
+          <Text style={styles.timelineActivity}>
+            {entry.description.toLowerCase().includes("note")
+              ? "Note added"
+              : entry.description}
+          </Text>
         </View>
       ))
   ) : (
     <Text style={styles.noTimelineText}>No timeline data available</Text>
   )}
 </View>
+
+
 
 
     </ScrollView>
@@ -378,9 +380,15 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
+  noteDateText: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
   noteText: {
     fontSize: 16,
     color: "#000",
+    marginBottom:15
   },
   expandText: {
     color: 'blue',
@@ -559,6 +567,17 @@ const styles = StyleSheet.create({
   },
   timelineActivity: {
     fontSize: 16,
+  },
+  viewAllNotesButton: {
+    padding: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  viewAllNotesText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 

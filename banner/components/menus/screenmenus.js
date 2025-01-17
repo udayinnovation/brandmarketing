@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ImagePickerPage from '../../ImagePickerPage';
 import HomePage from '../../HomePage';
 import LeadPage from '../../pages/LeadPage';
-import BusinessForm from '../../BusinessForm';
+import BusinessForm from '../../pages/BusinessForm';
 import Account from '../../pages/Account';
 import HeaderMenu from './headermenu';
 import LoginPage from '../../pages/LoginPage';

@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Share } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const BusinessDetails = () => {
+const BusinessDetails = ({navigation}) => {
+  console.log(navigation); 
   // Function to handle sharing the app
   const handleShareApp = async () => {
     try {
@@ -43,7 +44,7 @@ const BusinessDetails = () => {
         {/* Options Section */}
         <View style={styles.optionsContainer}>
           {[
-            { icon: 'rocket', label: 'Campaign Settings' },
+            { icon: 'rocket', label: 'Campaign Settings',action: () => navigation.navigate('AdCampaignScreen'), },
             { icon: 'card', label: 'Billing Details' },
             { icon: 'globe', label: 'Manage Website' },
             { icon: 'notifications', label: 'Notifications' },
@@ -53,7 +54,11 @@ const BusinessDetails = () => {
             { icon: 'share-social', label: 'Share App', action: handleShareApp },
             { icon: 'document-text', label: 'Terms & Conditions' },
             { icon: 'lock-closed', label: 'Privacy & Policy' },
-            { icon: 'mail', label: 'Contact Us' },
+            {
+              icon: 'mail',
+              label: 'Contact Us',
+              action: () => navigation.navigate('ContactUs'), // Navigate to ContactUs
+            },
             { icon: 'log-out', label: 'Logout' },
           ].map((item, index) => (
             <TouchableOpacity

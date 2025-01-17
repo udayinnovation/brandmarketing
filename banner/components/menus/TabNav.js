@@ -9,7 +9,9 @@ import LeadPage from '../../pages/LeadPage';
 import LeadDetailsPage from '../../pages/LeadDetailsPage';
 import ImagePickerPage from '../../ImagePickerPage';
 import BusinessDetails from '../../pages/BusinessDetails';
-
+import LeadStackNavigator from './LeadStackNav';
+import ContactUs from '../../pages/ContactUs';
+import BusinessStackNavigator from './BusinessStackNav';
 const TabNav = () => {
     const Tab = createBottomTabNavigator();
   return (
@@ -29,9 +31,10 @@ const TabNav = () => {
         >
             <Tab.Screen name="Home" component={StackNav} />
             <Tab.Screen name='ImagePicker' component={ImagePickerPage}/>
-            <Tab.Screen name='Lead' component={LeadPage}/>
+            <Tab.Screen name='Lead' component={LeadStackNavigator}/>
             <Tab.Screen name='Grow' component={GrowStackNavigator}/> 
-            <Tab.Screen name="Business" component={BusinessDetails} />
+            <Tab.Screen name="Business" component={BusinessStackNavigator} />
+            
             {/* <Tab.Screen name="LeadDetails" component={LeadDetailsPage} /> */}
        
         </Tab.Navigator>

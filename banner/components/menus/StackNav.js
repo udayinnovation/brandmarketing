@@ -4,7 +4,7 @@ import HomePage from "../../HomePage";
 import ImagePickerPage from "../../ImagePickerPage";
 import LeadPage from "../../pages/LeadPage";
 import GrowPage from "../../pages/GrowPage";
-import BusinessForm from "../../BusinessForm";
+import BusinessForm from "../../pages/BusinessForm";
 import Account from "../../pages/Account";
 import Icon from 'react-native-vector-icons/Entypo';
 import UserScreen from "../../pages/UserScreen";
@@ -12,6 +12,8 @@ import LeadDetailsPage from "../../pages/LeadDetailsPage";
 import BusinessDetails from "../../pages/BusinessDetails";
 import LoginPage from "../../pages/LoginPage";
 import GrowPackagePage from "../../pages/GrowPackagePage";
+import NotesPage from "../../pages/NotesPage";
+import ContactUs from "../../pages/ContactUs";
 
 
 const StackNav = () => {
@@ -65,6 +67,8 @@ const StackNav = () => {
         <Stack.Screen name="BusinessForm" component={BusinessForm} />
         <Stack.Screen name="Account" component={Account} />
         <Stack.Screen name="LoginPage" component={LoginPage} />
+        <Stack.Screen name="NotesPage" component={NotesPage} />
+        <Stack.Screen name="ContactUs" component={ContactUs} />
         {/* <Stack.Screen
           name="User"
           component={UserScreen}
