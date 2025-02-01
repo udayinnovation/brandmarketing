@@ -1,116 +1,140 @@
-import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import React, { useContext, useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { Provider as PaperProvider } from "react-native-paper";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
+import AuthContext from "../context/AuthContext";
 
 const LoginPage = () => {
-  const handleLoginPress = () => {
-    alert("Login button pressed!");
+  const [countryCode, setCountryCode] = useState("+91"); // Default to India
+  const [phone, setPhone] = useState(""); // User's phone number
+  const [otp, setOtp] = useState(""); // OTP entered by the user
+  const [isOtpSent, setIsOtpSent] = useState(false); // Toggle for OTP flow
+  const { login } = useContext(AuthContext); // Access login function from AuthContext
+
+  //put your iphere for testing or server api
+  const API_BASE_URL = "http://127.0.0.1:8000/api/mobileApp"; // Replace with your backend URL
+
+  // Step 1: Request OTP
+  const requestOtp = async () => {
+    const fullPhoneNumber = `${countryCode}${phone}`;
+    try {
+      console.log(fullPhoneNumber)
+      const response = await axios.post(`${API_BASE_URL}/request-otp`, { phone: fullPhoneNumber });
+      if (response.data.success) {
+        setIsOtpSent(true);
+        Alert.alert("Success", "OTP sent to your phone!");
+      } else {
+        Alert.alert("Error", response.data.message || "Failed to send OTP.");
+      }
+    } catch (error) {
+      console.error("Error requesting OTP:", error);
+      Alert.alert("Error", "Unable to send OTP. Please try again.");
+    }
   };
 
-  const handleForgotPasswordPress = () => {
-    alert("Forgot Password pressed!");
+  // Step 2: Verify OTP
+  const verifyOtp = async () => {
+    const fullPhoneNumber = `${countryCode}${phone}`;
+    try {
+      const response = await axios.post(`${API_BASE_URL}/verify-otp`, { phone: fullPhoneNumber, otp });
+      if (response.data.success) {
+        const token = response.data.token; // Session token from backend
+        const userData = response.data.user?response.data.user:`${countryCode}${phone}`; // Assuming user data is returned
+
+        // Store user data & token in SecureStore via AuthContext
+        login(userData, token);
+
+        Alert.alert("Success", "Login successful!");
+      } else {
+        Alert.alert("Error", response.data.message || "Invalid OTP.");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      Alert.alert("Error", "Unable to verify OTP. Please try again.");
+    }
   };
 
-  const handleSignUpPress = () => {
-    alert("Sign Up button pressed!");
+  // Securely store session token
+  const storeSessionToken = async (token) => {
+    try {
+      await SecureStore.setItemAsync("sessionToken", token);
+      console.log("Session token securely stored.");
+    } catch (error) {
+      console.error("Error storing session token:", error);
+      Alert.alert("Error", "Failed to securely store session token.");
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
-      <Text style={styles.subtitle}>Log in to your account</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-      />
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry />
-
-      <TouchableOpacity onPress={handleForgotPasswordPress}>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.loginButton} onPress={handleLoginPress}>
-        <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity>
-
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Don't have an account?</Text>
-        <TouchableOpacity onPress={handleSignUpPress}>
-          <Text style={styles.signUpText}>Sign Up</Text>
-        </TouchableOpacity>
+    <PaperProvider>
+      <View style={styles.container}>
+        <Text style={styles.title}>Login with OTP</Text>
+        {!isOtpSent ? (
+          <>
+            <Picker
+              selectedValue={countryCode}
+              onValueChange={(itemValue) => setCountryCode(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="India (+91)" value="+91" />
+              <Picker.Item label="United States (+1)" value="+1" />
+            </Picker>
+            <View style={styles.spacing} />
+            <TextInput
+              style={styles.input}
+              placeholder="Enter phone number"
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+            />
+            <Button title="Request OTP" onPress={requestOtp} />
+          </>
+        ) : (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter OTP"
+              keyboardType="numeric"
+              value={otp}
+              onChangeText={setOtp}
+            />
+            <Button title="Verify OTP" onPress={verifyOtp} />
+          </>
+        )}
       </View>
-    </View>
+    </PaperProvider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
-    alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    padding: 16,
+    backgroundColor: "#fff",
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#333333",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666666",
-    marginBottom: 30,
+    textAlign: "center",
+    marginBottom: 16,
   },
   input: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#f5f5f5",
+    borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    fontSize: 16,
+    padding: 12,
+    marginBottom: 16,
   },
-  forgotPassword: {
-    color: "#6200ea",
-    fontSize: 14,
-    textAlign: "right",
-    width: "100%",
-    marginBottom: 30,
-  },
-  loginButton: {
-    backgroundColor: "#6200ea",
-    width: "100%",
+  picker: {
     height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    marginBottom: 20,
+    width: "100%",
+    marginBottom: 16,
   },
-  loginButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  footerText: {
-    fontSize: 14,
-    color: "#666666",
-  },
-  signUpText: {
-    fontSize: 14,
-    color: "#6200ea",
-    marginLeft: 5,
+  spacing: {
+    height: 10,
   },
 });
 

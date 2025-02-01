@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import * as SecureStore from "expo-secure-store";
+import AuthContext from "./context/AuthContext";
+
 //import FooterMenu from "./components/menus/footermenu";
 
 const HomePage = ({ navigation }) => {
+  const { user, logout } = useContext(AuthContext);
+
   const handleButtonPress = () => {
     alert("Welcome to your home page!");
   };
+  // Replace with your backend URL or your ip
+  const API_BASE_URL = "http://127.0.0.1:8000/api/mobileApp"; 
 
-  return (
+  return (  
     <View style={styles.outercontainer}>
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to Your App</Text>
@@ -24,6 +31,12 @@ const HomePage = ({ navigation }) => {
           onPress={() => navigation.navigate("LoginPage")}
         >
           <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.loginButton]}
+          onPress={logout}
+        >
+          <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
 
         {/* Button 3: Signup */}
